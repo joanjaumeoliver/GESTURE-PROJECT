@@ -1,3 +1,4 @@
+import os
 import torch.nn as nn
 from network.classifier import Classifier
 import torch.cuda
@@ -21,8 +22,8 @@ class GestureModel():
         self.model = Classifier()
 
         # Add CUDA if available
-        if torch.cuda.is_available():
-            self.model.cuda()
+        #if torch.cuda.is_available():
+        #    self.model.cuda()
 
         # Define cost function criterion (Cross Entropy Loss for multi-classification)
         self.criterion = nn.CrossEntropyLoss()
@@ -75,7 +76,7 @@ class GestureModel():
             # We save the model weights every 5 epochs for later testing
             # We also save the accuracy
             if epoch%5 == 0:
-                torch.save(self.model.state_dict(), "/home/ramon/rromero/PycharmProjects/gesture/experiments/exp10/ep"+str(epoch))
+                torch.save(self.model.state_dict(), os.getcwd() + "experiments/exp10/ep"+str(epoch))
 
                 correct = 0
                 total = 0
@@ -124,7 +125,7 @@ class GestureModel():
         for epoch in range(self._epochs):
             if epoch%5 == 0:
                 print(f"epoch number: {epoch}")
-                self.model.load_state_dict(torch.load("/home/ramon/rromero/PycharmProjects/gesture/experiments/exp10/ep"+str(epoch)))
+                self.model.load_state_dict(torch.load(os.getcwd() + "/experiments/exp10/ep"+str(epoch)))
 
                 # Compute the loss and test the accuracy in the current epoch
                 with torch.no_grad():
@@ -190,14 +191,14 @@ class GestureModel():
         import mediapipe as mp
 
         # Load a certain set of weights for live predictions
-        weights_path = "/home/rromero/PycharmProjects/gesture/experiments/exp8/ep200.zip"
+        weights_path = os.getcwd() + "/experiments/exp8/ep200.zip"
         self.model.load_state_dict(torch.load(weights_path))
 
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_pose = mp.solutions.pose
 
         # For webcam input: (-1 value may be changed to find the webcam input)
-        cap = cv2.VideoCapture(-1)
+        cap = cv2.VideoCapture(0)
         with self.mp_pose.Pose(
                 min_detection_confidence=0.5,
                 min_tracking_confidence=0.5) as pose:
@@ -375,5 +376,5 @@ class GestureModel():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    model = GestureModel(root_dir="/home/ramon/rromero/PycharmProjects/gesture/dataset/BodyGestureDataset/")
+    model = GestureModel(root_dir=os.getcwd() + "/dataset/BodyGestureDataset")
     model.live()
