@@ -1,0 +1,52 @@
+This is a dataset containing 450 sample videos of static and dynamic human gestures.
+It also contains numpy arrays for every video with frame-to-frame predicted 33 3D coordinates of body joints using MediaPipe BlazePose model.
+240 samples are for static gestures and 210 samples for dynamic gestures.
+It is divided in 10 subjects (S1, S2, ..., S10).
+Each subject contains 4 folders: 2 for static and dynamic videos and 2 for their corresponding numpy arrays.
+Every gesture is filmed 3 times at 3 different distances for every subject.
+
+GESTURE LIST:
+
+    STATIC GESTURES:
+
+        - ATTENTION: Catch the robot's attention to give him an order.
+
+        - RIGHT: Order the robot to turn right.
+
+        - LEFT: Order the robot to turn left.
+
+        - STOP: Order the robot to stop its trajectory.
+
+        - YES: Approve a robot's information.
+
+        - SHRUG: Inform a robot that you don't understand his information.
+
+        - RANDOM: The robot does not have to do anything.
+
+        - STATIC: The robot does not have to do anything.
+
+
+    DYNAMIC GESTURES:
+
+        - GREETING: Greet the robot.
+
+        - CONTINUE: Order the robot to continue its path after telling him to stop.
+
+        - TURNBACK: Order the robot to turn 180 degrees.
+
+        - NO: Deny a robot's information.
+
+        - SLOWDOWN: Order the robot to reduce its speed.
+
+        - COME: Order the robot to reach your position.
+
+        - BACK: Order the robot to move back.
+
+
+
+VARIATIONS:
+
+    - Distances: 1m, 4m, 6m
+
+    - Full/upper body
+
