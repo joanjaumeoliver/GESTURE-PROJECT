@@ -1,5 +1,6 @@
 import os
 import torch.nn as nn
+from zmq import device
 from network.classifier import Classifier
 import torch.cuda
 import numpy as np
@@ -9,9 +10,9 @@ from dataset.dataset_loader import IRIGesture
 from torch.utils.data import DataLoader
 #np.set_printoptions(threshold=sys.maxsize)
 
-
-
 class GestureModel():
+    
+    assignedDevice = 'cpu'
 
     def __init__(self, root_dir=None, weights_path=None):
         # Init variables
@@ -22,9 +23,11 @@ class GestureModel():
         self.model = Classifier()
 
         # Add CUDA if available
-        #if torch.cuda.is_available():
-        #    self.model.cuda()
+        if torch.cuda.is_available():
+                self.assignedDevice = 'cuda'
 
+        self.model.to(device=self.assignedDevice)
+        
         # Define cost function criterion (Cross Entropy Loss for multi-classification)
         self.criterion = nn.CrossEntropyLoss()
 
@@ -46,7 +49,6 @@ class GestureModel():
 
         # Create dataloader
         train_dataloader = DataLoader(train_dataset, batch_size=216, shuffle=True, drop_last=True)
-
         loss_values = []
         accuracies = []
 
@@ -336,7 +338,7 @@ class GestureModel():
                     landmarks[98] = pose_landmarks.landmark[self.mp_pose.PoseLandmark.RIGHT_FOOT_INDEX].z
 
                     with torch.no_grad():
-                        landmarks_tensor = torch.Tensor(landmarks)
+                        landmarks_tensor = torch.Tensor(landmarks).to(device=self.assignedDevice)
                         outputs_live = self.model(landmarks_tensor)
                         #print(outputs_live)
                         m_live = nn.Softmax(dim=0)
@@ -361,7 +363,7 @@ class GestureModel():
 
     def infer(self, landmarks):
         with torch.no_grad():
-            landmarks_tensor_infer = torch.Tensor(landmarks)
+            landmarks_tensor_infer = torch.Tensor(landmarks).to(self.assignedDevice)
             outputs_infer = self.model(landmarks_tensor_infer)
             # print(outputs_live)
             m_infer = nn.Softmax(dim=0)
