@@ -30,7 +30,7 @@ class IRIGesture(Dataset):
                     _videos_path = os.path.join(subject_path, "videos")
                     for gesture in os.listdir(_3Djoints_path):
                         file_path = os.path.join(_3Djoints_path, gesture)
-                        file_name = file_path.split("/")[-1].split(".")[0]
+                        file_name = os.path.basename(file_path).split(".")[0]
                         self._paths.append(file_path)
                         video_path = os.path.join(_videos_path, file_name + ".avi")
                         self._videos.append(video_path)
@@ -48,7 +48,7 @@ class IRIGesture(Dataset):
         # Sample item of the dataset
         item_path = self._paths[item]
         video_path = self._videos[item]
-        gesture_str = item_path.split("/")[-1].split(".")[0].split("_")[0]
+        gesture_str = os.path.basename(item_path).split(".")[0].split("_")[0]
 
         # We vectorize the gesture labelling of the samples
         gesture = np.zeros(self.num_gestures)
@@ -227,7 +227,7 @@ class IRIGesture(Dataset):
 
 
 if __name__ == "__main__":
-    dataset = IRIGesture(root_dir="/home/ramon/rromero/PycharmProjects/gesture/dataset/BodyGestureDataset", is_for="train")
+    dataset = IRIGesture(root_dir=os.getcwd() + "/dataset/BodyGestureDataset", is_for="train")
     print(f"dataset length: {len(dataset)} samples")
     #for i in range(7):
     #    print(dataset[i]["landmarks"])

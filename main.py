@@ -1,19 +1,16 @@
-import os
-import torch.nn as nn
-from zmq import device
-from network.classifier import Classifier
-import torch.cuda
-import numpy as np
-#import sys
-import cv2
 from dataset.dataset_loader import IRIGesture
+from network.classifier import Classifier
 from torch.utils.data import DataLoader
-#np.set_printoptions(threshold=sys.maxsize)
+from zmq import device
+import cv2
+import mediapipe as mp
+import numpy as np
+import os
+import torch.cuda
+import torch.nn as nn
 
 class GestureModel():
     
-    assignedDevice = 'cpu'
-
     def __init__(self, root_dir=None, weights_path=None):
         # Init variables
         self._root_dir = root_dir
@@ -23,10 +20,11 @@ class GestureModel():
         self.model = Classifier()
 
         # Add CUDA if available
+        self. _torchDevice = 'cpu'    
         if torch.cuda.is_available():
-                self.assignedDevice = 'cuda'
+                self._torchDevice = 'cuda'
 
-        self.model.to(device=self.assignedDevice)
+        self.model.to(device=self._torchDevice)
         
         # Define cost function criterion (Cross Entropy Loss for multi-classification)
         self.criterion = nn.CrossEntropyLoss()
@@ -37,10 +35,9 @@ class GestureModel():
 
         if weights_path:
             self.model.load_state_dict(torch.load(weights_path))
-            #weights_path = "/home/rromero/PycharmProjects/gesture/experiments/exp8/ep200.zip"
 
 
-    def train(self):
+    def train(self, expNumber):
         # Initialize variables
         self.model.train()
 
@@ -56,8 +53,8 @@ class GestureModel():
         for epoch in range(self._epochs):
             print(f"{epoch} epochs out of {self._epochs} completed.")
             for i, batch in enumerate(train_dataloader):
-                landmarks = batch['landmarks'].float()
-                gesture = batch['gesture']
+                landmarks = batch['landmarks'].float().to(device=self._torchDevice)
+                gesture = batch['gesture'].to(device=self._torchDevice)
 
                 # Feed forward
                 pred = self.model(landmarks)
@@ -75,10 +72,10 @@ class GestureModel():
                 # Keep track of the loss epoch-by-epoch
                 loss_values.append(loss.data.item())
 
-            # We save the model weights every 5 epochs for later testing
+            # We save the model weights every 4 epochs for later testing
             # We also save the accuracy
-            if epoch%5 == 0:
-                torch.save(self.model.state_dict(), os.getcwd() + "experiments/exp10/ep"+str(epoch))
+            if epoch%4 == 0:
+                torch.save(self.model.state_dict(), os.getcwd() + "experiments/exp"+str(expNumber)+"/ep"+str(epoch))
 
                 correct = 0
                 total = 0
@@ -123,19 +120,19 @@ class GestureModel():
         test_loss_values = []
         test_accuracies = []
 
-        # Load the saved model weights every 5 epochs for testing
+        # Load the saved model weights every 4 epochs for testing
         for epoch in range(self._epochs):
-            if epoch%5 == 0:
+            if epoch%4 == 0:
                 print(f"epoch number: {epoch}")
-                self.model.load_state_dict(torch.load(os.getcwd() + "/experiments/exp10/ep"+str(epoch)))
+                self.model.load_state_dict(torch.load(os.getcwd()+"/experiments/exp10/ep"+str(epoch)+".zip"))
 
                 # Compute the loss and test the accuracy in the current epoch
                 with torch.no_grad():
                     test_iter = iter(test_dataloader)
                     test_batch = next(test_iter)
 
-                    test_landmarks = test_batch['landmarks'].float()
-                    test_gesture = test_batch['gesture']
+                    test_landmarks = test_batch['landmarks'].float().to(device=self._torchDevice)
+                    test_gesture = test_batch['gesture'].to(device=self._torchDevice)
                     test_output = self.model(test_landmarks)
 
                     test_loss = self.criterion(test_output, torch.argmax(test_gesture, dim=-1))
@@ -145,8 +142,8 @@ class GestureModel():
                     total_test = 0
 
                     for data_test in test_dataloader:
-                        landmarks_test = data_test['landmarks'].float()
-                        gestures_test = data_test['gesture']
+                        landmarks_test = data_test['landmarks'].float().to(device=self._torchDevice)
+                        gestures_test = data_test['gesture'].to(device=self._torchDevice)
                         #image_test = data_test['image'].numpy()
                         outputs_test = self.model(landmarks_test)
                         m_test = nn.Softmax(dim=1)
@@ -157,8 +154,8 @@ class GestureModel():
 
                         print(f"predicted_test: {predicted_test}")
                         print(f"correct_gesture_test: {correct_gesture_test}")
-                        #print(f"softmax(predicted_test): {pred_label_test}")
-                        #print(total_test)
+                        print(f"softmax(predicted_test): {pred_label_test}")
+                        print(total_test)
 
                         correct_test += (predicted_test == correct_gesture_test).sum().item()
 
@@ -190,7 +187,6 @@ class GestureModel():
 
 
     def live(self):
-        import mediapipe as mp
 
         # Load a certain set of weights for live predictions
         weights_path = os.getcwd() + "/experiments/exp8/ep200.zip"
@@ -338,7 +334,7 @@ class GestureModel():
                     landmarks[98] = pose_landmarks.landmark[self.mp_pose.PoseLandmark.RIGHT_FOOT_INDEX].z
 
                     with torch.no_grad():
-                        landmarks_tensor = torch.Tensor(landmarks).to(device=self.assignedDevice)
+                        landmarks_tensor = torch.Tensor(landmarks).to(device=self._torchDevice)
                         outputs_live = self.model(landmarks_tensor)
                         #print(outputs_live)
                         m_live = nn.Softmax(dim=0)
@@ -363,7 +359,7 @@ class GestureModel():
 
     def infer(self, landmarks):
         with torch.no_grad():
-            landmarks_tensor_infer = torch.Tensor(landmarks).to(self.assignedDevice)
+            landmarks_tensor_infer = torch.Tensor(landmarks).to(self._torchDevice)
             outputs_infer = self.model(landmarks_tensor_infer)
             # print(outputs_live)
             m_infer = nn.Softmax(dim=0)
@@ -379,4 +375,4 @@ class GestureModel():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     model = GestureModel(root_dir=os.getcwd() + "/dataset/BodyGestureDataset")
-    model.live()
+    model.test()
