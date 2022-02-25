@@ -47,10 +47,11 @@ class GestureModel():
 
         # Create dataloader
         train_dataloader = DataLoader(train_dataset, batch_size=216, shuffle=True, drop_last=True)
-        test_dataloader = DataLoader(test_dataset, batch_size=216, shuffle=True, drop_last=True)
+        test_dataloader = DataLoader(test_dataset, batch_size=24, shuffle=True, drop_last=True)
         loss_values = []
-        accuracies = []
-
+        accuracies_train = []
+        accuracies_test = []
+        
         # Keep track epoch-by-epoch of the training process
         for epoch in range(self._epochs):
             print(f"{epoch} epochs out of {self._epochs} completed.")
@@ -103,7 +104,10 @@ class GestureModel():
                         correct += (predicted == correct_gesture).sum().item()
 
                     print('Accuracy of the network on the training set: %d %%' % (100 * correct / total))
-                    accuracies.append(100 * correct / total)
+                    accuracies_train.append(100 * correct / total)
+                    
+                    correct = 0
+                    total = 0
                     
                     for data in test_dataloader:
                         landmarks = data['landmarks'].float().to(device=self._torchDevice)
@@ -124,13 +128,13 @@ class GestureModel():
                         correct += (predicted == correct_gesture).sum().item()
 
                     print('Accuracy of the network on the test set: %d %%' % (100 * correct / total))
-                    accuracies.append(100 * correct / total)
+                    accuracies_test.append(100 * correct / total)
 
         print(f"Loss values: {loss_values}")
-        print(f"Accuracies: {accuracies}")
+        print(f"Accuracies train: {accuracies_train}")
+        print(f"Accuracies test: {accuracies_test}")
 
-
-    def test(self):
+    def test(self, expNumber, epoch):
         # Set model to evaluation mode
         self.model.eval()
 
@@ -143,76 +147,73 @@ class GestureModel():
         test_loss_values = []
         test_accuracies = []
 
-        # Load the saved model weights every 4 epochs for testing
-        for epoch in range(self._epochs):
-            if epoch%4 == 0:
-                print(f"epoch number: {epoch}")
-                self.model.load_state_dict(torch.load(os.getcwd()+"/experiments/exp10/ep"+str(epoch)+".zip"))
+        # Load the saved model weights
+        self.model.load_state_dict(torch.load(os.getcwd()+"/experiments/exp"+str(expNumber)+"/ep"+str(epoch)+".zip"))
 
-                # Compute the loss and test the accuracy in the current epoch
-                with torch.no_grad():
-                    test_iter = iter(test_dataloader)
-                    test_batch = next(test_iter)
+        # Compute the loss and test the accuracy in the current epoch
+        with torch.no_grad():
+            test_iter = iter(test_dataloader)
+            test_batch = next(test_iter)
 
-                    test_landmarks = test_batch['landmarks'].float().to(device=self._torchDevice)
-                    test_gesture = test_batch['gesture'].to(device=self._torchDevice)
-                    test_output = self.model(test_landmarks)
+            test_landmarks = test_batch['landmarks'].float().to(device=self._torchDevice)
+            test_gesture = test_batch['gesture'].to(device=self._torchDevice)
+            test_output = self.model(test_landmarks)
 
-                    test_loss = self.criterion(test_output, torch.argmax(test_gesture, dim=-1))
-                    test_loss_values.append(test_loss.data.item())
+            test_loss = self.criterion(test_output, torch.argmax(test_gesture, dim=-1))
+            test_loss_values.append(test_loss.data.item())
 
-                    correct_test = 0
-                    total_test = 0
+            correct_test = 0
+            total_test = 0
 
-                    for data_test in test_dataloader:
-                        landmarks_test = data_test['landmarks'].float().to(device=self._torchDevice)
-                        gestures_test = data_test['gesture'].to(device=self._torchDevice)
-                        #image_test = data_test['image'].numpy()
-                        outputs_test = self.model(landmarks_test)
-                        m_test = nn.Softmax(dim=1)
-                        pred_label_test = m_test(outputs_test)
-                        _, predicted_test = torch.max(pred_label_test, 1)
-                        _, correct_gesture_test = torch.max(gestures_test, 1)
-                        total_test += gestures_test.size(0)
+            for data_test in test_dataloader:
+                landmarks_test = data_test['landmarks'].float().to(device=self._torchDevice)
+                gestures_test = data_test['gesture'].to(device=self._torchDevice)
+                #image_test = data_test['image'].numpy()
+                outputs_test = self.model(landmarks_test)
+                m_test = nn.Softmax(dim=1)
+                pred_label_test = m_test(outputs_test)
+                _, predicted_test = torch.max(pred_label_test, 1)
+                _, correct_gesture_test = torch.max(gestures_test, 1)
+                total_test += gestures_test.size(0)
 
-                        print(f"predicted_test: {predicted_test}")
-                        print(f"correct_gesture_test: {correct_gesture_test}")
-                        print(f"softmax(predicted_test): {pred_label_test}")
-                        print(total_test)
+                print(f"predicted_test: {predicted_test}")
+                print(f"correct_gesture_test: {correct_gesture_test}")
+                print(f"softmax(predicted_test): {pred_label_test}")
+                print(total_test)
 
-                        correct_test += (predicted_test == correct_gesture_test).sum().item()
+                correct_test += (predicted_test == correct_gesture_test).sum().item()
 
-                        print('Accuracy of the network on the test set: %d %%' % (100 * correct_test / total_test))
-                        test_accuracies.append(100 * correct_test / total_test)
+                print('Accuracy of the network on the test set: %d %%' % (100 * correct_test / total_test))
+                test_accuracies.append(100 * correct_test / total_test)
 
-                        ## For visualization of some results every 100 epochs
-                        #if epoch%100 == 0:
-                        #    for i in range(4):
-                        #        print(f"gesture prediction: {predicted_test[i]}")
-                        #        print(f"correct gesture: {correct_gesture_test[i]}")
-                        #        while True:
-                        #            cv2.imshow('image' + str(i), image_test[i])
-                        #            if cv2.waitKey(0) == 27:
-                        #                cv2.destroyAllWindows()
-                        #                break
+                ## For visualization of some results every 100 epochs
+                #if epoch%100 == 0:
+                #    for i in range(4):
+                #        print(f"gesture prediction: {predicted_test[i]}")
+                #        print(f"correct gesture: {correct_gesture_test[i]}")
+                #        while True:
+                #            cv2.imshow('image' + str(i), image_test[i])
+                #            if cv2.waitKey(0) == 27:
+                #                cv2.destroyAllWindows()
+                #                break
 
-                        # Compute confusion matrix at 200 epochs for metrics
-                        if epoch == 200:
-                            confusion_matrix = np.zeros((8, 8))
+                # Compute confusion matrix at 200 epochs for metrics
+                if epoch == 200:
+                    confusion_matrix = np.zeros((8, 8))
 
-                            for i in range(24):
-                                confusion_matrix[predicted_test[i].item()][correct_gesture_test[i].item()] += 1
+                    for i in range(24):
+                        confusion_matrix[predicted_test[i].item()][correct_gesture_test[i].item()] += 1
 
-                            print(confusion_matrix)
+                    print(confusion_matrix)
 
         print(f"Test loss values: {test_loss_values}")
         print(f"Test accuracies: {test_accuracies}")
 
 
-    def live(self):
+    def live(self, expNumber, epoch):
 
         # Load a certain set of weights for live predictions
-        weights_path = os.getcwd() + "/experiments/exp8/ep200.zip"
+        weights_path = os.getcwd() + "/experiments/exp"+str(expNumber)+"/ep"+str(epoch)+".zip"  #"/experiments/exp8/ep200.zip"
         self.model.load_state_dict(torch.load(weights_path))
 
         self.mp_drawing = mp.solutions.drawing_utils
@@ -398,4 +399,4 @@ class GestureModel():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     model = GestureModel(root_dir=os.getcwd() + "/dataset/BodyGestureDataset")
-    model.train(11)
+    model.live(11,220)
