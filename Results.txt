@@ -1,0 +1,166 @@
+tensor([1.7810e-09, 6.4258e-09, 8.5385e-04, 9.3452e-01, 6.4214e-02, 7.4409e-07,
+        4.1514e-04, 8.5780e-14], device='cuda:0')
+PROBABILITY PERCENTAGES:
+Attention: 0.0 %
+Right: 0.0 %
+Left: 0.09 %
+Stop: 93.45 %
+Yes: 6.42 %
+Shrug: 0.0 %
+Random: 0.04 %
+Static: 0.0 %
+Predicted gesture: STOP
+tensor([  9.7534, -35.8616,  14.7010,  -7.2944,   3.5722,  -0.8593,   4.5455,
+        -19.1629], device='cuda:0')
+tensor([7.0501e-03, 1.0911e-22, 9.9290e-01, 2.7826e-10, 1.4579e-05, 1.7345e-07,
+        3.8587e-05, 1.9499e-15], device='cuda:0')
+PROBABILITY PERCENTAGES:
+Attention: 0.71 %
+Right: 0.0 %
+Left: 99.29 %
+Stop: 0.0 %
+Yes: 0.0 %
+Shrug: 0.0 %
+Random: 0.0 %
+Static: 0.0 %
+Predicted gesture: LEFT
+tensor([ -2.0332, -14.6314,   2.6148,   5.1789,   2.3701,   7.7590,   2.7793,
+        -22.6573], device='cuda:0')
+tensor([5.1129e-05, 1.7272e-10, 5.3368e-03, 6.9315e-02, 4.1782e-03, 9.1483e-01,
+        6.2908e-03, 5.6461e-14], device='cuda:0')
+PROBABILITY PERCENTAGES:
+Attention: 0.01 %
+Right: 0.0 %
+Left: 0.53 %
+Stop: 6.93 %
+Yes: 0.42 %
+Shrug: 91.48 %
+Random: 0.63 %
+Static: 0.0 %
+Predicted gesture: SHRUG
+tensor([-16.4647,   2.2171, -19.6759,  -7.7127,   5.6660, -24.5402,  11.0150,
+         14.6221], device='cuda:0')
+tensor([3.0726e-14, 3.9892e-06, 1.2385e-15, 1.9428e-10, 1.2553e-04, 9.5577e-18,
+        2.6412e-02, 9.7346e-01], device='cuda:0')
+PROBABILITY PERCENTAGES:
+Attention: 0.0 %
+Right: 0.0 %
+Left: 0.0 %
+Stop: 0.0 %
+Yes: 0.01 %
+Shrug: 0.0 %
+Random: 2.64 %
+Static: 97.35 %
+Predicted gesture: STATIC
+tensor([-17.6761,   1.1527, -17.7485,  -6.6615,   4.9856, -23.0225,   9.6712,
+         13.6819], device='cuda:0')
+tensor([2.3632e-14, 3.5543e-06, 2.1983e-14, 1.4358e-09, 1.6420e-04, 1.1262e-16,
+        1.7796e-02, 9.8204e-01], device='cuda:0')
+PROBABILITY PERCENTAGES:
+Attention: 0.0 %
+Right: 0.0 %
+Left: 0.0 %
+Stop: 0.0 %
+Yes: 0.02 %
+Shrug: 0.0 %
+Random: 1.78 %
+Static: 98.2 %
+Predicted gesture: STATIC
+tensor([-11.4436,   4.8183, -17.8204,   0.4886,   0.9608, -10.5966,   5.3862,
+          5.3669], device='cuda:0')
+tensor([1.9121e-08, 2.2077e-01, 3.2515e-11, 2.9078e-03, 4.6627e-03, 4.4601e-08,
+        3.8955e-01, 3.8211e-01], device='cuda:0')
+PROBABILITY PERCENTAGES:
+Attention: 0.0 %
+Right: 22.08 %
+Left: 0.0 %
+Stop: 0.29 %
+Yes: 0.47 %
+Shrug: 0.0 %
+Random: 38.96 %
+Static: 38.21 %
+Predicted gesture: RANDOM
+tensor([-13.9744,  22.3994, -37.7730,   3.0459,  -3.9093, -24.5364,   3.7489,
+         12.0686], device='cuda:0')
+tensor([1.5961e-16, 9.9997e-01, 7.3693e-27, 3.9343e-09, 3.7520e-12, 4.1307e-21,
+        7.9467e-09, 3.2611e-05], device='cuda:0')
+PROBABILITY PERCENTAGES:
+Attention: 0.0 %
+Right: 100.0 %
+Left: 0.0 %
+Stop: 0.0 %
+Yes: 0.0 %
+Shrug: 0.0 %
+Random: 0.0 %
+Static: 0.0 %
+Predicted gesture: RIGHT
+tensor([-13.1023,  11.0939, -21.8714,   5.4041,  -0.3019,  -7.7963,  -2.0062,
+         -2.1570], device='cuda:0')
+tensor([3.0920e-11, 9.9662e-01, 4.8069e-15, 3.3687e-03, 1.1204e-05, 6.2317e-09,
+        2.0381e-06, 1.7528e-06], device='cuda:0')
+PROBABILITY PERCENTAGES:
+Attention: 0.0 %
+Right: 99.66 %
+Left: 0.0 %
+Stop: 0.34 %
+Yes: 0.0 %
+Shrug: 0.0 %
+Random: 0.0 %
+Static: 0.0 %
+Predicted gesture: RIGHT
+tensor([  7.9294,   1.7516,  -5.9692,   4.8275,   2.5807, -15.0561,   7.5663,
+        -19.1068], device='cuda:0')
+tensor([5.7231e-01, 1.1875e-03, 5.2666e-07, 2.5732e-02, 2.7210e-03, 5.9585e-11,
+        3.9805e-01, 1.0374e-12], device='cuda:0')
+PROBABILITY PERCENTAGES:
+Attention: 57.23 %
+Right: 0.12 %
+Left: 0.0 %
+Stop: 2.57 %
+Yes: 0.27 %
+Shrug: 0.0 %
+Random: 39.81 %
+Static: 0.0 %
+Predicted gesture: ATTENTION
+tensor([ 10.2314,  -0.5781,  -5.0295,   3.7500,   2.7481, -15.6515,   9.7251,
+        -20.7007], device='cuda:0')
+tensor([6.2313e-01, 1.2591e-05, 1.4683e-07, 9.5435e-04, 3.5043e-04, 3.5791e-12,
+        3.7555e-01, 2.2958e-14], device='cuda:0')
+PROBABILITY PERCENTAGES:
+Attention: 62.31 %
+Right: 0.0 %
+Left: 0.0 %
+Stop: 0.1 %
+Yes: 0.04 %
+Shrug: 0.0 %
+Random: 37.56 %
+Static: 0.0 %
+Predicted gesture: ATTENTION
+tensor([  9.6930,  -3.8447,  -1.4895,   6.0759,   5.4938, -18.8691,  11.9322,
+        -24.8704], device='cuda:0')
+tensor([9.5901e-02, 1.2661e-07, 1.3345e-06, 2.5759e-03, 1.4392e-03, 3.7796e-14,
+        9.0008e-01, 9.3569e-17], device='cuda:0')
+PROBABILITY PERCENTAGES:
+Attention: 9.59 %
+Right: 0.0 %
+Left: 0.0 %
+Stop: 0.26 %
+Yes: 0.14 %
+Shrug: 0.0 %
+Random: 90.01 %
+Static: 0.0 %
+Predicted gesture: RANDOM
+tensor([ -5.1713,  -7.9525,   2.4469,   4.7825,   5.8051,  -2.1014,   3.7260,
+        -13.4762], device='cuda:0')
+tensor([1.1251e-05, 6.9718e-07, 2.2895e-02, 2.3662e-01, 6.5796e-01, 2.4235e-04,
+        8.2272e-02, 2.7823e-09], device='cuda:0')
+PROBABILITY PERCENTAGES:
+Attention: 0.0 %
+Right: 0.0 %
+Left: 2.29 %
+Stop: 23.66 %
+Yes: 65.8 %
+Shrug: 0.02 %
+Random: 8.23 %
+Static: 0.0 %
+Predicted gesture: YES
