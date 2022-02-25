@@ -41,11 +41,13 @@ class GestureModel():
         # Initialize variables
         self.model.train()
 
-        # Load training dataset
+        # Load dataset
         train_dataset = IRIGesture(root_dir=self._root_dir, is_for="train")
+        test_dataset = IRIGesture(root_dir=self._root_dir, is_for="test")
 
         # Create dataloader
         train_dataloader = DataLoader(train_dataset, batch_size=216, shuffle=True, drop_last=True)
+        test_dataloader = DataLoader(test_dataset, batch_size=216, shuffle=True, drop_last=True)
         loss_values = []
         accuracies = []
 
@@ -75,7 +77,7 @@ class GestureModel():
             # We save the model weights every 4 epochs for later testing
             # We also save the accuracy
             if epoch%4 == 0:
-                torch.save(self.model.state_dict(), os.getcwd() + "experiments/exp"+str(expNumber)+"/ep"+str(epoch))
+                torch.save(self.model.state_dict(), os.getcwd() + "/experiments/exp"+str(expNumber)+"/ep"+str(epoch)+".zip")
 
                 correct = 0
                 total = 0
@@ -83,8 +85,8 @@ class GestureModel():
                 # We test the accuracy of the model in the current epoch
                 with torch.no_grad():
                     for data in train_dataloader:
-                        landmarks = data['landmarks'].float()
-                        gestures = data['gesture']
+                        landmarks = data['landmarks'].float().to(device=self._torchDevice)
+                        gestures = data['gesture'].to(device=self._torchDevice)
                         outputs = self.model(landmarks)
                         m = nn.Softmax(dim=1)
                         pred_label = m(outputs)
@@ -101,6 +103,27 @@ class GestureModel():
                         correct += (predicted == correct_gesture).sum().item()
 
                     print('Accuracy of the network on the training set: %d %%' % (100 * correct / total))
+                    accuracies.append(100 * correct / total)
+                    
+                    for data in test_dataloader:
+                        landmarks = data['landmarks'].float().to(device=self._torchDevice)
+                        gestures = data['gesture'].to(device=self._torchDevice)
+                        outputs = self.model(landmarks)
+                        m = nn.Softmax(dim=1)
+                        pred_label = m(outputs)
+                        _, predicted = torch.max(outputs, 1)
+                        _, correct_gesture = torch.max(gestures, 1)
+                        total += gestures.size(0)
+
+                        #print(outputs)
+                        #print(f"predicted: {predicted.numpy()}")
+                        #print(f"correct_gesture: {correct_gesture.numpy()}")
+                        #print(f"softmax(predicted): {pred_label}")
+                        #print(total)
+
+                        correct += (predicted == correct_gesture).sum().item()
+
+                    print('Accuracy of the network on the test set: %d %%' % (100 * correct / total))
                     accuracies.append(100 * correct / total)
 
         print(f"Loss values: {loss_values}")
@@ -336,11 +359,11 @@ class GestureModel():
                     with torch.no_grad():
                         landmarks_tensor = torch.Tensor(landmarks).to(device=self._torchDevice)
                         outputs_live = self.model(landmarks_tensor)
-                        #print(outputs_live)
-                        m_live = nn.Softmax(dim=0)
+                        print(outputs_live)
+                        m_live = nn.Softmax()
                         pred_label_live = m_live(outputs_live)
                         percentages = 100*pred_label_live
-                        #print(pred_label_live)
+                        print(pred_label_live)
                         print("PROBABILITY PERCENTAGES:")
                         print(f"Attention: {round(percentages[0].data.item(), 2)} %")
                         print(f"Right: {round(percentages[1].data.item(), 2)} %")
@@ -375,4 +398,4 @@ class GestureModel():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     model = GestureModel(root_dir=os.getcwd() + "/dataset/BodyGestureDataset")
-    model.test()
+    model.train(11)
