@@ -78,7 +78,7 @@ class GestureModel():
             # We save the model weights every 4 epochs for later testing
             # We also save the accuracy
             if epoch%4 == 0:
-                torch.save(self.model.state_dict(), os.getcwd() + "/experiments/exp"+str(expNumber)+"/ep"+str(epoch)+".zip")
+                torch.save(self.model.state_dict(), f"{os.getcwd()}/experiments/exp{str(expNumber)}/ep{str(epoch)}.zip")
 
                 correct = 0
                 total = 0
